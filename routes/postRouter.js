@@ -1,9 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const mongoose = require('mongoose')
 const requireLogin = require('../middlewares/requireLogin')
 const controller = require('../controllers/postController')
-const Post = mongoose.model("Post")
+
 
 
 

@@ -1,4 +1,5 @@
-
+const mongoose = require('mongoose')
+const Post = mongoose.model("Post")
 //get all posts
 exports.getAllPosts = (req, res)=>{
     Post.find({privacy:true})

@@ -1,3 +1,8 @@
+const mongoose = require('mongoose')
+const Post = mongoose.model("Post")
+const User = mongoose.model("User")
+
+
 //Update personal information
 exports.updateProfileUser = (req,res)=>{
     User.findByIdAndUpdate(req.user._id,{
