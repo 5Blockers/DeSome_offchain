@@ -6,9 +6,7 @@ const controller = require('../controllers/postController')
 
 
 
-router.get('/all-posts', requireLogin, controller.getAllPosts)
-
-router.get('get-following-posts', requireLogin, controller.getFollowersPosts)
+router.get('/get-following-posts', requireLogin, controller.getFollowersPosts)
 
 router.get('/my-posts', requireLogin, controller.getOwnerPosts)
 

@@ -1,18 +1,5 @@
 const mongoose = require('mongoose')
 const Post = mongoose.model("Post")
-//get all posts
-exports.getAllPosts = (req, res)=>{
-    Post.find({privacy:true})
-    .populate("postedBy","_id displayname")
-    .populate("comments.postedBy","_id displayname")
-    .sort('-createdAt')
-    .then(posts=>{
-        res.json({posts})
-    })
-    .catch(err=>{
-        console.log(err);
-    })
-}
 
 //get followers posts
 exports.getFollowersPosts = (req, res)=>{

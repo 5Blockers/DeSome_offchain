@@ -52,8 +52,8 @@ exports.login = (req, res) => {
 }
 
 //Update personal information
-exports.updateProfileUser = (req,res)=>{
-    User.findByIdAndUpdate(req.user._id,{
+exports.updateProfileUser = async (req,res)=>{
+    await User.findByIdAndUpdate(req.user._id,{
         $set:{
             displayname:req.body.displayname,
             email:req.body.email,
@@ -89,8 +89,8 @@ exports.getAnotherProfileUser = (req,res)=>{
 }
 
 //follow a user
-exports.follow = (req,res)=>{
-    User.findByIdAndUpdate(req.body.followId,{
+exports.follow = async (req,res)=>{
+    await User.findByIdAndUpdate(req.body.followId,{
         $push:{followers:req.user._id}
     },{new:true},(err,result)=>{
         if (err) {
@@ -107,8 +107,8 @@ exports.follow = (req,res)=>{
 }
 
 //unfollow a user
-exports.unfollow = (req,res)=>{
-    User.findByIdAndUpdate(req.body.unfollowId,{
+exports.unfollow = async (req,res)=>{
+    await User.findByIdAndUpdate(req.body.unfollowId,{
         $pull:{followers:req.user._id}
     },{new:true},(err,result)=>{
         if (err) {
