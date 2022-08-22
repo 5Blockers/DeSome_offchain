@@ -34,7 +34,6 @@ exports.createPost = (req, res)=>{
     if (!caption) {
         res.status(422).json({error:"Please add a caption"})
     }
-    req.user.password = undefined
     const post = new Post({
         caption,
         resources,
