@@ -1,11 +1,9 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const dotenv = require('dotenv')
 const morgan = require('morgan')
-dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 5000
-
+require('dotenv').config()
 
 
 mongoose.connect(process.env.MONGOURI, {useNewUrlParser: true})
@@ -18,10 +16,11 @@ morgan.token('host', function(req, res) {
 });
 app.use(morgan(':method :host :status :res[content-length] - :response-time ms'))
 
-require('./models/post')
 require('./models/user')
+require('./models/post')
 app.use(express.json())
+app.use('/api/user',require('./routes/userRouter'))
 
 app.listen(PORT, () => {
-    console.log('Listenning on port '+PORT+'...')
+    console.log(`Listenning on port ${PORT}...`)
 })

@@ -1,11 +1,14 @@
 const express = require('express')
 const router = express.Router()
-const requireLogin = require('../middleware/requireLogin')
+const requireLogin = require('../middlewares/requireLogin')
 const controller = require('../controllers/userController')
 
 
+router.post('/sign-up', controller.signUp)
 
-router.get('/user/:id',requireLogin,controller.getAnotherProfileUser)
+router.post('/log-in', controller.login)
+
+router.get('/:id',requireLogin,controller.getAnotherProfileUser)
 
 router.post('/search-user',controller.searchAccount)
 

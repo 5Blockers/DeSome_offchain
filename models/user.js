@@ -3,14 +3,15 @@ const {ObjectId} = mongoose.Schema.Types
 const userSchema = new mongoose.Schema({
     principal: {
         type:String,
-        // required:true,
+        required:true,
     },
     displayname: {
         type:String,
         required:true,
     },
     email:{
-        type:String
+        type:String,
+        unique:true
     },
     avatar:{
         type:String,
@@ -23,6 +24,7 @@ const userSchema = new mongoose.Schema({
     tagname:{
         type:String,
         unique:true,
+        required:true
     },
     bio:{
         type:String,
