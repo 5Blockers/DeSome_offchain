@@ -2,15 +2,24 @@ const mongoose = require('mongoose')
 const Post = require('../models/post')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const {testMail} = require('../validators/validator')
 
 //Sign up a user
 exports.signUp = (req, res)=>{
-    const {principal, displayname, tagname} = req.body
-    if (!principal|| !displayname || !tagname) {
+    const {principal, displayname, tagname, email} = req.body
+    if (!principal|| !displayname || !tagname || !email) {
         return res.status(422).json({
             success: false, 
             data: {
                 message: "please add all the field"
+            }
+        })
+    }
+    if (!testMail(email)) {
+        return res.status(400).json({
+            success: false, 
+            data: {
+                message: "Not valid email"
             }
         })
     }
@@ -34,7 +43,8 @@ exports.signUp = (req, res)=>{
         const user = new User({
             principal,
             displayname,
-            tagname
+            tagname,
+            email
         })
 
         user.save()
@@ -102,6 +112,14 @@ exports.login = (req, res) => {
 
 //Update personal information
 exports.updateProfileUser = async (req,res)=>{
+    if (!testMail(req.body.email)) {
+        return res.status(400).json({
+            success: false, 
+            data: {
+                message: "Not valid email"
+            }
+        })
+    }
     await User.findByIdAndUpdate(req.user._id,{
         $set:{
             displayname:req.body.displayname,
