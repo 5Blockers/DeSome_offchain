@@ -250,3 +250,42 @@ exports.searchAccount = (req,res)=>{
         });
     })
 }
+
+//get current user ID
+exports.getCurrentUser = (req, res) => {
+    if (req.user) {
+        return res.status(200).json({
+            success: true,
+            data: {
+                user: req.user
+            }
+        })
+    }
+}
+
+//get all chat users
+exports.getAllChatUsers = async (req, res) => {
+    try {
+        const chatListId = [...req.user.followers, ...req.user.following]
+        const chatList = []
+        for (let id of chatListId) {
+            const user = await User.findById(id).select({_id: 1, principal: 1, displayname: 1, tagname: 1, avatar: 1})
+            chatList.push(user)
+        }
+        res.status(200).json({
+            success: true,
+            data: {
+                chatList
+            }
+        })
+    
+    }
+    catch(err) {
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        })
+    }
+}

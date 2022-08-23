@@ -3,7 +3,7 @@ const router = express.Router()
 const requireLogin = require('../middlewares/requireLogin')
 const controller = require('../controllers/userController')
 
-
+//router for common functions
 router.post('/sign-up', controller.signUp)
 
 router.post('/log-in', controller.login)
@@ -17,5 +17,9 @@ router.put('/update-profile',requireLogin,controller.updateProfileUser)
 router.put('/follow', requireLogin, controller.follow)
 
 router.put('/unfollow', requireLogin, controller.unfollow)
+
+//router for chat-api
+router.post('/current-user', requireLogin, controller.getCurrentUser)
+router.post('/all-chat-users', requireLogin, controller.getAllChatUsers)
 
 module.exports = router
