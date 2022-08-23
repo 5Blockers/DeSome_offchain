@@ -34,7 +34,7 @@ async function getAllMessage(req, res) {
         const {to} = req.body
         const messages = await Message
             .find({users: {$all: [from, to]}})
-            .sort({updatedBy: 1})
+            .sort({updatedAt: 1})
         const projectMessages = messages.map((msg) => {
             return {
                 fromSelf: msg.sender.toString() === from,
