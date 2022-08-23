@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Post = mongoose.model("Post")
+const  Image = require('../models/image')
 
 //get followers posts
 exports.getFollowersPosts = (req, res)=>{
@@ -8,10 +9,21 @@ exports.getFollowersPosts = (req, res)=>{
     .populate("comments.postedBy","_id displayname")
     .sort('-createdAt')
     .then(posts=>{
-        res.json({posts})
+        res.status(200).json({
+            success: true,
+            data: {
+                posts
+            }
+        })
     })
     .catch(err=>{
         console.log(err);
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        });
     })
 }
 
@@ -19,7 +31,12 @@ exports.getFollowersPosts = (req, res)=>{
 exports.createPost = (req, res)=>{
     const {caption,resources,privacy} = req.body
     if (!caption) {
-        res.status(422).json({error:"Please add a caption"})
+        res.status(422).json({
+            success: false,
+            data: {
+                error:"Please add a caption"
+            }
+        })
     }
     const post = new Post({
         caption,
@@ -27,8 +44,37 @@ exports.createPost = (req, res)=>{
         privacy,
         postedBy:req.user
     })
+    
+    // //add to Image collection (Nguyen yeu cau)
+    // resources
+    // .filter((resource) => {
+    //     return resource.NFT
+    // })
+    // .map((resource) => {
+    //     const code = ['code' + resource.link] //change by AI
+    //     return {
+    //         link: resource.link,
+    //         code
+    //     }
+    // })
+    // .forEach((image) => {
+    //     const  savedImage = new Image({
+    //         link: image.link,
+    //         code: image.code
+    //     })
+    //     savedImage.save()
+    //         .then((result) => console.log('success'))
+    //         .catch((err) => console.log('error'))
+    // })
+
+    
     post.save().then(result=>{
-        res.json({post:result})
+        res.status(200).json({
+            success: true,
+            data: {
+                post:result
+            }
+        })
     })
     .catch(err=>{
         console.log(err);
@@ -40,10 +86,21 @@ exports.getOwnerPosts = (req, res)=>{
     Post.find({postedBy:req.user._id})
     .populate("postedBy","_id displayname")
     .then(mypost=>{
-        res.json({mypost})
+        res.status(200).json({
+            success: true,
+            data: {
+                mypost
+            }
+        })
     })
     .catch(err=>{
         console.log(err);
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        });
     })
 }
 
@@ -58,9 +115,19 @@ exports.like = (req,res)=>{
     .populate("postedBy","_id displayname")
     .exec((err,result)=>{
         if (err) {
-            return res.status(422).json({error:err})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            })
         }else{
-            res.json(result)
+            res.status(200).json({
+                success: true,
+                data: {
+                    result
+                }
+            })
         }
     })
 }
@@ -76,9 +143,19 @@ exports.unlike = (req,res)=>{
     .populate("postedBy","_id displayname")
     .exec((err,result)=>{
         if (err) {
-            return res.status(422).json({error:err})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            })
         }else{
-            res.json(result)
+            res.status(200).json({
+                success: true,
+                data: {
+                    result
+                }
+            })
         }
     })
 }
@@ -98,9 +175,19 @@ exports.comments = (req,res)=>{
     .populate("postedBy","_id displayname")
     .exec((err,result)=>{
         if (err) {
-            return res.status(422).json({error:err})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            })
         }else{
-            res.json(result)
+            res.status(200).json({
+                success: true,
+                data: {
+                    result
+                }
+            })
         }
     })
 }

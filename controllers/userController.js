@@ -1,20 +1,35 @@
 const mongoose = require('mongoose')
-const Post = mongoose.model("Post")
-const User = mongoose.model("User")
+const Post = require('../models/post')
+const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
 //Sign up a user
 exports.signUp = (req, res)=>{
     const {principal, displayname, tagname} = req.body
     if (!principal|| !displayname || !tagname) {
-        return res.status(422).json({error:"please add all the field"})
+        return res.status(422).json({
+            success: false, 
+            data: {
+                message: "please add all the field"
+            }
+        })
     }
     User.findOne({$or:[{principal:principal},{tagname:tagname}]}).then((saveUser)=>{
         if (saveUser) {
             if (saveUser.tagname === tagname) {
-                return res.status(422).json({error:"This tagname is already in use"})
+                return res.status(422).json({
+                    success: false,
+                    data: {
+                        message:"This tagname is already in use"
+                    }
+                })
             }
-            return res.status(422).json({error:'user already exists'})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message:'user already exists'
+                }
+            })
         }
         const user = new User({
             principal,
@@ -24,15 +39,32 @@ exports.signUp = (req, res)=>{
 
         user.save()
         .then(user=>{
-            res.json({message:"save successfully"})
+            res.status(200).json({
+                success: true,
+                data: {
+                    message:"save successfully"
+                }
+            })
         })
         .catch(err=>{
-            console.log(err);
+            console.log(err.message)
+            res.status(500).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            });
         })
         
     })
     .catch(err=>{
         console.log(err);
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        });
     })
 }
 
@@ -41,13 +73,30 @@ exports.login = (req, res) => {
     const {principal} = req.body
     User.findOne({principal:principal}).then(loginUser=>{
         if (!loginUser) {
-            return res.status(422).json({error:"This account does not exist!"})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message:"This account does not exist!"
+                }
+            })
         }
         const token = jwt.sign({_id:loginUser._id}, process.env.JWT_SECRET_KEY)
         const {_id, principal, displayname, email, avatar, background, tagname, bio, following, followers} = loginUser
-        res.json({token,user:{_id, principal, displayname, email, avatar, background, tagname, bio, following, followers}})
+        res.status(200).json({
+            success: true,
+            data: {
+                token,
+                user: {_id, principal, displayname, email, avatar, background, tagname, bio, following, followers}
+            }
+        })
     }).catch(err=>{
         console.log(err);
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        });
     })
 }
 
@@ -64,9 +113,19 @@ exports.updateProfileUser = async (req,res)=>{
         }
     },{new:true},(err,result)=>{
         if (err) {
-            return res.status(422).json({error:err})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            })
         }
-        res.json(result)
+        res.status(200).json({
+            success: true,
+            data: {
+                result
+            }
+        })
     })
 }
 
@@ -79,12 +138,27 @@ exports.getAnotherProfileUser = (req,res)=>{
         .populate("postedBy","_id displayname")
         .exec((err,posts)=>{
             if (err) {
-                return res.status(422).json({error:err})
+                return res.status(422).json({
+                    success: false,
+                    data: {
+                        message: err.message
+                    }
+                })
             }
-            res.json({user,posts})
+            res.status(200).json({
+                success: true,
+                data: {
+                    user, posts
+                }
+            })
         })
     }).catch(err=>{
-        return res.status(404).json({error:"User not found"})
+        return res.status(404).json({
+            success: false,
+            data: {
+                message: "User not found"
+            }
+        })
     })
 }
 
@@ -94,14 +168,29 @@ exports.follow = async (req,res)=>{
         $push:{followers:req.user._id}
     },{new:true},(err,result)=>{
         if (err) {
-            return res.status(422).json({error:err})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            })
         }
         User.findByIdAndUpdate(req.user._id,{
             $push:{following:req.body.followId}
         },{new:true}).select("-password").then(result=>{
-            res.json(result)
+            res.status(200).json({
+                success: true,
+                data: {
+                    result
+                }
+            })
         }).catch(err=>{
-            return res.status(422).json({error:err})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            })
         })
     })
 }
@@ -112,14 +201,29 @@ exports.unfollow = async (req,res)=>{
         $pull:{followers:req.user._id}
     },{new:true},(err,result)=>{
         if (err) {
-            return res.status(422).json({error:err})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            })
         }
         User.findByIdAndUpdate(req.user._id,{
             $pull:{following:req.body.unfollowId}
         },{new:true}).select("-password").then(result=>{
-            res.json(result)
+            res.status(200).json({
+                success: true,
+                data: {
+                    result
+                }
+            })
         }).catch(err=>{
-            return res.status(422).json({error:err})
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: err.message
+                }
+            })
         })
     })
 }
@@ -130,8 +234,19 @@ exports.searchAccount = (req,res)=>{
     User.find({$or:[{displayname:{$regex:userPattern}},{tagname:{$regex:userPattern}}]})
     .select("_id displayname tagname")
     .then(user=>{
-        res.json({user})
+        res.status(200).json({
+            success: true,
+            data: {
+                user
+            }
+        })
     }).catch(err=>{
         console.log(err);
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        });
     })
 }

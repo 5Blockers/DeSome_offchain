@@ -1,10 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
-const PORT = process.env.PORT || 5000
-require('dotenv').config()
 
+require('dotenv').config()
+app.use(cors())
 
 mongoose.connect(process.env.MONGOURI, {useNewUrlParser: true})
 mongoose.connection.on('connected', ()=>{
@@ -22,6 +23,8 @@ app.use(express.json())
 app.use('/api/user',require('./routes/userRouter'))
 app.use('/api/post',require('./routes/postRouter'))
 
-app.listen(PORT, () => {
+//server
+const PORT = process.env.PORT || 5000
+const server = app.listen(PORT, () => {
     console.log(`Listenning on port ${PORT}...`)
 })
