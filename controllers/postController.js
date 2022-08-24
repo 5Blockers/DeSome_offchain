@@ -5,7 +5,7 @@ const  Image = require('../models/image')
 //get followers posts
 exports.getFollowersPosts = (req, res)=>{
     Post.find({postedBy:{$in:req.user.following},privacy:true})
-    .populate("postedBy","_id displayname")
+    .populate("postedBy","_id displayname tagname avatar")
     .populate("comments.postedBy","_id displayname tagname avatar")
     .sort('-createdAt')
     .then(posts=>{
@@ -84,7 +84,7 @@ exports.createPost = (req, res)=>{
 //get owner post
 exports.getOwnerPosts = (req, res)=>{
     Post.find({postedBy:req.user._id})
-    .populate("postedBy","_id displayname")
+    .populate("postedBy","_id displayname tagname avatar")
     .populate("comments.postedBy","_id displayname tagname avatar")
     .then(mypost=>{
         res.status(200).json({
@@ -113,7 +113,7 @@ exports.like = (req,res)=>{
         new:true
     })
     .populate("comments.postedBy","_id displayname tagname avatar")
-    .populate("postedBy","_id displayname")
+    .populate("postedBy","_id displayname tagname avatar")
     .exec((err,result)=>{
         if (err) {
             return res.status(422).json({
@@ -141,7 +141,7 @@ exports.unlike = (req,res)=>{
         new:true
     })
     .populate("comments.postedBy","_id displayname tagname avatar")
-    .populate("postedBy","_id displayname")
+    .populate("postedBy","_id displayname tagname avatar")
     .exec((err,result)=>{
         if (err) {
             return res.status(422).json({
@@ -173,7 +173,7 @@ exports.comments = (req,res)=>{
         new:true
     })
     .populate("comments.postedBy","_id displayname tagname avatar")
-    .populate("postedBy","_id displayname")
+    .populate("postedBy","_id displayname tagname avatar")
     .exec((err,result)=>{
         if (err) {
             return res.status(422).json({
