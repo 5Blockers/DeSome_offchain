@@ -180,70 +180,140 @@ exports.getAnotherProfileUser = (req,res)=>{
     })
 }
 
-//follow a user
+// //follow a user
+// exports.follow = async (req,res)=>{
+//     await User.findByIdAndUpdate(req.body.followId,{
+//         $push:{followers:req.user._id}
+//     },{new:true},(err,result)=>{
+//         if (err) {
+//             return res.status(422).json({
+//                 success: false,
+//                 data: {
+//                     message: err.message
+//                 }
+//             })
+//         }
+//         User.findByIdAndUpdate(req.user._id,{
+//             $push:{following:req.body.followId}
+//         },{new:true}).select("-password").then(result=>{
+//             res.status(200).json({
+//                 success: true,
+//                 data: {
+//                     result
+//                 }
+//             })
+//         }).catch(err=>{
+//             return res.status(422).json({
+//                 success: false,
+//                 data: {
+//                     message: err.message
+//                 }
+//             })
+//         })
+//     })
+// }
+
+// //unfollow a user
+// exports.unfollow = async (req,res)=>{
+//     await User.findByIdAndUpdate(req.body.unfollowId,{
+//         $pull:{followers:req.user._id}
+//     },{new:true},(err,result)=>{
+//         if (err) {
+//             return res.status(422).json({
+//                 success: false,
+//                 data: {
+//                     message: err.message
+//                 }
+//             })
+//         }
+//         User.findByIdAndUpdate(req.user._id,{
+//             $pull:{following:req.body.unfollowId}
+//         },{new:true}).select("-password").then(result=>{
+//             res.status(200).json({
+//                 success: true,
+//                 data: {
+//                     result
+//                 }
+//             })
+//         }).catch(err=>{
+//             return res.status(422).json({
+//                 success: false,
+//                 data: {
+//                     message: err.message
+//                 }
+//             })
+//         })
+//     })
+// }
+
+//follow remake
 exports.follow = async (req,res)=>{
-    await User.findByIdAndUpdate(req.body.followId,{
-        $push:{followers:req.user._id}
-    },{new:true},(err,result)=>{
-        if (err) {
+    try {
+        const to = await User.findById(req.body.followId)
+        if (to.followers.indexOf(req.user._id) !== -1) {
             return res.status(422).json({
                 success: false,
                 data: {
-                    message: err.message
+                    message: 'already following'
                 }
             })
         }
-        User.findByIdAndUpdate(req.user._id,{
-            $push:{following:req.body.followId}
-        },{new:true}).select("-password").then(result=>{
-            res.status(200).json({
-                success: true,
-                data: {
-                    result
-                }
-            })
-        }).catch(err=>{
-            return res.status(422).json({
-                success: false,
-                data: {
-                    message: err.message
-                }
-            })
+        to.followers.push(req.user._id)
+        await to.save()
+
+        const from = await User.findById(req.user._id)
+        from.following.push(req.body.followId)
+        await from.save()
+        res.status(200).json({
+            success: false,
+            data: {
+                message: 'follow successfully'
+            }
         })
-    })
+    }
+    catch(err) {
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        })
+    } 
 }
 
-//unfollow a user
+//unfollow remake
 exports.unfollow = async (req,res)=>{
-    await User.findByIdAndUpdate(req.body.unfollowId,{
-        $pull:{followers:req.user._id}
-    },{new:true},(err,result)=>{
-        if (err) {
+    try {
+        const to = await User.findById(req.body.unfollowId)
+        if (to.followers.indexOf(req.user._id) === -1) {
             return res.status(422).json({
                 success: false,
                 data: {
-                    message: err.message
+                    message: 'not following'
                 }
             })
         }
-        User.findByIdAndUpdate(req.user._id,{
-            $pull:{following:req.body.unfollowId}
-        },{new:true}).select("-password").then(result=>{
-            res.status(200).json({
-                success: true,
-                data: {
-                    result
-                }
-            })
-        }).catch(err=>{
-            return res.status(422).json({
-                success: false,
-                data: {
-                    message: err.message
-                }
-            })
+        to.followers.splice(to.followers.indexOf(req.user._id), 1)
+        await to.save()
+
+        const from = await User.findById(req.user._id)
+        from.following.splice(to.following.indexOf(req.body.unfollowId), 1)
+        await from.save()
+        res.status(200).json({
+            success: false,
+            data: {
+                message: 'unfollow successfully'
+            }
         })
-    })
+    }
+    catch(err) {
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        })
+    }  
 }
 
 //search a user
