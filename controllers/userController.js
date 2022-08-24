@@ -147,10 +147,29 @@ exports.updateProfileUser = async (req,res)=>{
     })
 }
 
+exports.getAllUsers = (req, res)=>{
+    User.find()
+    .then(user=>{
+        res.status(200).json({
+            success: true,
+            data: {
+                user
+            }
+        })
+    })
+    .catch(err=>{
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        });
+    })
+}
+
 //Profile other users (Not sign in user)
 exports.getAnotherProfileUser = (req,res)=>{
     User.findOne({_id:req.params.id})
-    .select("-password")
     .then(user=>{
         Post.find({postedBy:req.params.id})
         .populate("postedBy","_id displayname")
