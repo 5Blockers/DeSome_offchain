@@ -171,7 +171,7 @@ exports.comments = (req,res)=>{
     },{
         new:true
     })
-    .populate("comments.postedBy","_id displayname")
+    .populate("comments.postedBy","_id displayname tagname avatar")
     .populate("postedBy","_id displayname")
     .exec((err,result)=>{
         if (err) {
