@@ -172,7 +172,8 @@ exports.getAnotherProfileUser = (req,res)=>{
     User.findOne({_id:req.params.id})
     .then(user=>{
         Post.find({postedBy:req.params.id})
-        .populate("postedBy","_id displayname")
+        .populate("comments.postedBy","_id displayname tagname avatar")
+        .populate("postedBy","_id displayname tagname avatar")
         .exec((err,posts)=>{
             if (err) {
                 return res.status(422).json({
