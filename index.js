@@ -24,6 +24,9 @@ app.use(express.json())
 app.use('/api/user',require('./routes/userRouter'))
 app.use('/api/post',require('./routes/postRouter'))
 app.use('/api/message',require('./routes/messageRouter'))
+app.get('/test', (req, res) => {
+  res.send('hello world')
+})
 //server
 const PORT = process.env.PORT || 5000
 const server = app.listen(PORT, () => {
