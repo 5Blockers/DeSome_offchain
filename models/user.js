@@ -40,7 +40,8 @@ const userSchema = new mongoose.Schema({
         ref:"User"
     }],
     flags:{
-        type:Number
+        type:Number,
+        default: 0
     }
 })
 

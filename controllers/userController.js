@@ -127,7 +127,8 @@ exports.updateProfileUser = async (req,res)=>{
             tagname:req.body.tagname,
             bio:req.body.bio,
             avatar:req.body.avatar,
-            background:req.body.background
+            background:req.body.background,
+            flags: 0
         }
     },{new:true},(err,result)=>{
         if (err) {
