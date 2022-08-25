@@ -22,3 +22,4 @@ jobs:
           hl11jp
           ${{ secrets.TOKEN_SECRET }}
           pm2 reload index.js
+# trigger ssh
