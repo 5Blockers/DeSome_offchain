@@ -1,0 +1,18 @@
+name: SSH Remote Commands
+on:
+    push:
+      branches: [master]
+
+jobs:
+  job_one:
+    name: deployment
+    runs-on: debian-latest
+    steps:
+    - name: ssh connection
+      uses: appleboy/ssh-action@v0.1.5
+      with: 13.215.51.165
+      username: admin
+      key: ${{}}
+      port: 22
+      script: |
+        cd 
