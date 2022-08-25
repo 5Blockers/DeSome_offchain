@@ -16,7 +16,7 @@ jobs:
         key: ${{ secrets.SSH_SECRET }}
         port: 22
         script: |
-          /home/admin/DeSome_offchain
+          cd /home/admin/DeSome_offchain
           pm2 stop index.js
           git pull
           pm2 start index.js
