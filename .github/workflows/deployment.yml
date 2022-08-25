@@ -13,12 +13,12 @@ jobs:
       with: 
         host: 13.215.51.165
         username: admin
-        key: ${{secrets.SSH_SECRET}}
+        key: ${{ secrets.SSH_SECRET }}
         port: 22
         script: |
           sudo su -
           cd DeSome_offchain
           git pull
           hl11jp
-          ${{secrets.TOKEN_SECRET}}
+          ${{ secrets.TOKEN_SECRET }}
           pm2 reload index.js
