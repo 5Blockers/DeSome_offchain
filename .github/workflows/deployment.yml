@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: ssh connection
-      uses: appleboy/ssh-action@v0.1.5
+      uses: appleboy/ssh-action@master
       with: 
         host: 13.215.51.165
         username: admin
