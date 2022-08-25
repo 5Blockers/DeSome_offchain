@@ -16,10 +16,7 @@ jobs:
         key: ${{ secrets.SSH_SECRET }}
         port: 22
         script: |
-          sudo su -
-          cd /root/DeSome_offchain
+          cd DeSome_offchain
           git pull
-          hl11jp
-          ${{ secrets.TOKEN_SECRET }}
           pm2 reload index.js
 # should be working by now
