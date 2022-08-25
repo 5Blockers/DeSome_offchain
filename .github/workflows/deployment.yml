@@ -16,7 +16,8 @@ jobs:
         key: ${{ secrets.SSH_SECRET }}
         port: 22
         script: |
-          cd DeSome_offchain
+          /home/admin/DeSome_offchain
+          pm2 stop index.js
           git pull
-          pm2 reload index.js
+          pm2 start index.js
 # should be working by now
