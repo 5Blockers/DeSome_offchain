@@ -106,57 +106,105 @@ exports.getOwnerPosts = (req, res)=>{
 }
 
 //like
-exports.like = (req,res)=>{
-    Post.findByIdAndUpdate(req.body.postId,{
-        $push:{likes:req.user._id}
-    },{
-        new:true
-    })
-    .populate("comments.postedBy","_id displayname tagname avatar")
-    .populate("postedBy","_id displayname tagname avatar")
-    .exec((err,result)=>{
-        if (err) {
-            return res.status(422).json({
-                success: false,
-                data: {
-                    message: err.message
-                }
-            })
-        }else{
-            res.status(200).json({
-                success: true,
-                data: {
-                    result
-                }
-            })
+// exports.like = (req,res)=>{
+//     Post.findByIdAndUpdate(req.body.postId,{
+//         $push:{likes:req.user._id}
+//     },{
+//         new:true
+//     })
+//     .populate("comments.postedBy","_id displayname")
+//     .populate("postedBy","_id displayname")
+//     .exec((err,result)=>{
+//         if (err) {
+//             return res.status(422).json({
+//                 success: false,
+//                 data: {
+//                     message: err.message
+//                 }
+//             })
+//         }else{
+//             res.status(200).json({
+//                 success: true,
+//                 data: {
+//                     result
+//                 }
+//             })
+//         }
+//     })
+// }
+
+//like remake
+exports.like = async (req,res)=>{
+    const post = await Post
+                    .findById(req.body.postId)
+                    .populate("comments.postedBy","_id displayname")
+                    .populate("postedBy","_id displayname")
+    if (post.likes.indexOf(req.user._id) !== -1) {
+        return res.status(422).json({
+                        success: false,
+                        data: {
+                            message: 'Already liked'
+                        }
+                    })
+    }  
+    post.likes.push(req.user._id)
+    await post.save()
+    res.status(200).json({
+        success: true,
+        data: {
+            message: 'like successfully'
         }
     })
 }
 
-//unlike
-exports.unlike = (req,res)=>{
-    Post.findByIdAndUpdate(req.body.postId,{
-        $pull:{likes:req.user._id}
-    },{
-        new:true
-    })
-    .populate("comments.postedBy","_id displayname tagname avatar")
-    .populate("postedBy","_id displayname tagname avatar")
-    .exec((err,result)=>{
-        if (err) {
-            return res.status(422).json({
-                success: false,
-                data: {
-                    message: err.message
-                }
-            })
-        }else{
-            res.status(200).json({
-                success: true,
-                data: {
-                    result
-                }
-            })
+// //unlike
+// exports.unlike = (req,res)=>{
+//     Post.findByIdAndUpdate(req.body.postId,{
+//         $pull:{likes:req.user._id}
+//     },{
+//         new:true
+//     })
+//     .populate("comments.postedBy","_id displayname")
+//     .populate("postedBy","_id displayname")
+//     .exec((err,result)=>{
+//         if (err) {
+//             return res.status(422).json({
+//                 success: false,
+//                 data: {
+//                     message: err.message
+//                 }
+//             })
+//         }else{
+//             res.status(200).json({
+//                 success: true,
+//                 data: {
+//                     result
+//                 }
+//             })
+//         }
+//     })
+// }
+
+//unlike remake
+exports.unlike = async (req,res)=>{
+    const post = await Post
+                    .findById(req.body.postId)
+                    .populate("comments.postedBy","_id displayname")
+                    .populate("postedBy","_id displayname")
+    if (post.likes.indexOf(req.user._id) === -1) {
+        return res.status(422).json({
+                        success: false,
+                        data: {
+                            message: 'Not like yet'
+                        }
+                    })
+    } 
+    post.likes.splice(post.likes.indexOf(req.user._id), 1)
+    await post.save()
+    res.status(200).json({
+        success: true,
+        data: {
+            message: 'unlike successfully'
         }
     })
 }
