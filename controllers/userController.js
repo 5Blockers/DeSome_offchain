@@ -270,7 +270,7 @@ exports.getAnotherProfileUser = (req,res)=>{
 //follow remake
 exports.follow = async (req,res)=>{
     try {
-        if (req.user._id === req.body.followId) {
+        if (req.user._id == req.body.followId) {
             return res.status(422).json({
                 success: false,
                 data: {
