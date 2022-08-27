@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Post = mongoose.model("Post")
+const User = mongoose.model('User')
 const  Image = require('../models/image')
 
 //get followers posts
@@ -17,7 +18,6 @@ exports.getFollowersPosts = (req, res)=>{
         })
     })
     .catch(err=>{
-        console.log(err);
         res.status(500).json({
             success: false,
             data: {
@@ -83,7 +83,7 @@ exports.createPost = (req, res)=>{
 
 //get owner post
 exports.getOwnerPosts = (req, res)=>{
-    Post.find({postedBy:req.user._id})
+    Post.find({postedBy: {$or: [req.body]}})
     .populate("postedBy","_id displayname tagname avatar")
     .populate("comments.postedBy","_id displayname tagname avatar")
     .then(mypost=>{
@@ -95,11 +95,34 @@ exports.getOwnerPosts = (req, res)=>{
         })
     })
     .catch(err=>{
-        console.log(err);
         res.status(500).json({
             success: false,
             data: {
                 message: err.message
+            }
+        });
+    })
+}
+
+exports.getPosts = async (req, res)=>{
+    Post.find({Privacy: true})
+    .or([{postedBy: req.user._id}, {postedBy: {$in: req.user.following}}])
+    .populate("postedBy","_id displayname tagname avatar")
+    .populate("comments.postedBy","_id displayname tagname avatar")
+    .sort('-createdAt')
+    .then(posts=>{
+        res.status(200).json({
+            success: true,
+            data: {
+                posts
+            }   
+        })
+    })
+    .catch(err=>{
+        res.status(500).json({
+            success: false,
+            data: {
+            message: err.message
             }
         });
     })
