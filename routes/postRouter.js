@@ -3,9 +3,6 @@ const router = express.Router()
 const requireLogin = require('../middlewares/requireLogin')
 const controller = require('../controllers/postController')
 
-
-
-
 router.get('/get-following-posts', requireLogin, controller.getFollowersPosts)
 
 router.get('/my-posts', requireLogin, controller.getOwnerPosts)

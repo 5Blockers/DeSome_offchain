@@ -3,7 +3,7 @@ const User = require('../models/user')
 
 exports.report = async (req, res) => {
     try {
-        const {invalidLink, reportCode} = req.body
+        const {invalidLink, invalidUserId, reportCode} = req.body
         if (reportCode !== process.env.REPORT_CODE) {
             return res.status(403).json({
                 success: false,
@@ -14,18 +14,16 @@ exports.report = async (req, res) => {
         }
         const posts = await Post.find().select()
         let invalidPostId
-        let invalidUserId
         posts.forEach((post) => {
             post.resources.forEach((resource) => {
                 if (resource.link === invalidLink && resource.NFT) {
                     invalidPostId = post._id
-                    invalidUserId = post.postedBy
                 }
             })
         })
         const invalidPost = await Post.findById(invalidPostId).select({resources: 1})
         invalidPost.resources.forEach((resource) => {
-            if (resource.link === invalidLink && resource.NFT) {
+            if (resource.link === invalidLink && resource.NFT && resource.display == true) {
                 resource.display = false
                 resource.authorized = 'No'
             }
