@@ -4,6 +4,31 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const {testMail} = require('../validators/validator')
 
+
+//Search a user by principal
+exports.searchByPrincipal = (req, res) => {
+    const {principal} = req.body
+    User.findOne({principal: principal})
+    .select("_id displayname tagname")
+    .then(user=>{
+        res.status(200).json({
+            success: true,
+            data: {
+                user
+            }
+        })
+    }).catch(err=>{
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            data: {
+                message: err.message
+            }
+        });
+    })
+}
+
+
 //Sign up a user
 exports.signUp = (req, res)=>{
     const {principal, displayname, tagname, email} = req.body
