@@ -270,6 +270,14 @@ exports.getAnotherProfileUser = (req,res)=>{
 //follow remake
 exports.follow = async (req,res)=>{
     try {
+        if (req.user._id === req.body.followId) {
+            return res.status(422).json({
+                success: false,
+                data: {
+                    message: 'Can not follow yourself'
+                }
+            })
+        }
         const to = await User.findById(req.body.followId)
         if (to.followers.indexOf(req.user._id) !== -1) {
             return res.status(422).json({
