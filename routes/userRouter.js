@@ -20,6 +20,8 @@ router.put('/unfollow', requireLogin, controller.unfollow)
 
 router.post('/all-users', controller.getAllUsers)
 
+router.post('/search-by-principal', controller.searchByPrincipal)
+
 //router for chat-api
 router.post('/current-user', requireLogin, controller.getCurrentUser)
 router.post('/all-chat-users', requireLogin, controller.getAllChatUsers)
